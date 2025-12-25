@@ -8,9 +8,8 @@ read_packet() {
     len=$(read_varint)
 
     head -c "$len" | {
-        packet_id=$(read_varint)
-        printf '%s,' "$packet_id"
-        printf '%s' "$(xxd -p)"
+        packet_id="$(read_varint)"
+        printf '([id]="%d" [data]="%s")' "$packet_id" "$(xxd -p)"
     }
 }
 

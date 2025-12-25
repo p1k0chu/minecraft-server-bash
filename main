@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
 source ./packets/packets
+
 source ./packets/c2s_handshake
+
+source ./packets/c2s_status
+source ./packets/s2c_status
 
 source ./protocol/varint
 source ./protocol/types
@@ -9,15 +13,25 @@ source ./protocol/types
 declare -A player_connection=([stage]="handshake")
 
 while true; do
-    packet=$(read_packet)
+    declare -A packet=$(read_packet)
 
     case "${player_connection[stage]}" in
         "handshake")
-            packet=$(echo "$packet" | cut -d ',' -f 2 | xxd -r -p | read_c2s_handshake_packet)
-            echo "Got handshake packet: $packet" >&2
-            exit 0
+            handle_c2s_handshake_packet "$(xxd -r -p <<< "${packet["data"]}" | read_c2s_handshake_packet )"
             ;;
-        "status") ;;
+        "status") 
+            case "${packet["id"]}" in
+                0) # status req
+                    handle_c2s_status_request "$(xxd -r -p <<< "${packet["data"]}" | read_c2s_status_request )"
+                    ;;
+                1) # ping req
+                    ;;
+                *)
+                    echo "unknown status packet with id ${packet["id"]} received" >&2
+                    declare -p packet >&2
+                    ;;
+            esac
+            ;;
         *) 
             echo "Invalid protocol stage wtf get out of here" >&2;
             exit 1;

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+STATUS_RESPONSE_JSON=$(cat ./packets/status_response.json)
+
+write_s2c_status_response() {
+    local len
+    len=$(write_varint "${#STATUS_RESPONSE_JSON}" | wc -c)
+    (( len += ${#STATUS_RESPONSE_JSON} + 1 )) # +1 for packet id
+
+    write_varint "$len"
+    write_varint "0"
+    write_varint "${#STATUS_RESPONSE_JSON}"
+    echo -n "$STATUS_RESPONSE_JSON"
+}
+

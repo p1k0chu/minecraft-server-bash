@@ -19,3 +19,16 @@ read_c2s_handshake_packet() {
     printf '([protocol_version]="%d" [server_address]="%s" [server_port]="%d" [intent]="%d")' "$protocol_version" "$server_address" "$server_port" "$intent"
 }
 
+handle_c2s_handshake_packet() {
+    declare -A packet=$1
+
+    case "${packet[intent]}" in
+        0) # status
+            player_connection["stage"]="status"
+            ;;
+        *) # everything else
+            exit 1
+            ;;
+    esac
+}
+

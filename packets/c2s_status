@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+read_c2s_status_request() {
+    echo "()"
+}
+
+handle_c2s_status_request() {
+    write_s2c_status_response
+}
+
+

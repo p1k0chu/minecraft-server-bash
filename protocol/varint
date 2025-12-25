@@ -26,3 +26,12 @@ read_varint() {
     echo "$int"
 }
 
+write_varint() {
+    local int=$1
+    while (( int & -128 )); do
+        printf "\x$(printf '%x' "$(( int & 127 | 128 ))")"
+        (( int >>= 7 ))
+    done
+    printf "\x$(printf '%x' "$int")"
+}
+
