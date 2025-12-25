@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 
-if ! command -v ncat &>/dev/null; then
-    echo "ncat binary not found" >&2
-    exit 1
-fi
+fifo=
+
+trap_exit() {
+    if [[ -n $fifo ]]; then
+        rm -f -- "$fifo"
+    fi
+}
+trap trap_exit EXIT
+
 
 if [[ -n $1 ]]; then
     port=$1
@@ -11,5 +16,22 @@ else
     read -r -p "Port for your local server: " port
 fi
 
-ncat -e ./main -l "$port" -k
+if command -v ncat &>/dev/null; then
+    # nmap's version of netcat
+    ncat -e ./main -l "$port" -k
+elif command -v nc &>/dev/null; then
+    # og netcat
+
+    until
+        fifo=$(mktemp -p /tmp/ -u) || exit
+        mkfifo -- "$fifo"
+    do
+        echo "mkfifo failed, retrying." >&2
+    done
+
+    ./main < "$fifo" | nc -l localhost "$port" > "$fifo"
+else
+    echo "netcat binary not found" >&2
+    exit 1
+fi
 
