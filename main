@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+source ./packets/packets
+source ./packets/c2s_handshake
+
+source ./protocol/varint
+source ./protocol/types
+
+declare -A player_connection=([stage]="handshake")
+
+while true; do
+    packet=$(read_packet)
+
+    case "${player_connection[stage]}" in
+        "handshake")
+            echo "packet=$packet" >&2
+            packet=$(echo "$packet" | cut -d ',' -f 2 | xxd -r -p | read_c2s_handshake_packet)
+            echo "Got handshake packet: $packet" >&2
+            exit 0
+            ;;
+        "status") ;;
+        *) 
+            echo "Invalid protocol stage wtf get out of here" >&2;
+            exit 1;
+            ;;
+    esac
+done
+

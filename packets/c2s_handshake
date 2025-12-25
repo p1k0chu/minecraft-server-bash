@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+read_c2s_handshake_packet() {
+    local protocol_version
+    local server_address
+    local server_port
+    local intent
+
+    protocol_version=$(read_varint)
+#    echo "protocol_version=$protocol_version" >&2
+    server_address=$(read_string)
+
+    local b1 b2
+    b1=$(read_varint)
+    b2=$(read_varint)
+    server_port=$(( (b1 << 8) | b2 ))
+
+    intent=$(read_varint)
+
+    printf $'([protocol_version]="%d" [server_address]="%s" [server_port]="%d" [intent]="%d")' "$protocol_version" "$server_address" "$server_port" "$intent"
+}
+

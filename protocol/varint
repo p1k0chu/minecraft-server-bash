@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+read_varint() {
+    local int=0
+    local count=0
+    local byte=128
+
+    while [[ $((byte & 128)) -eq 128 ]]; do
+        byte=$(head -c 1 | xxd -p)
+
+        if [[ -z $byte ]]; then
+            break
+        fi
+
+        printf -v byte '%d' $(( 16#$byte ))
+        #printf "read varint got byte: %#x\n" "$byte" >&2
+
+        (( int |= (byte & 127) << count ))
+        (( count += 7 ))
+
+        if (( count > 35 )); then
+            echo 'VarInt is too big' >&2
+            exit 1
+        fi
+    done
+
+    echo "$int"
+}
+

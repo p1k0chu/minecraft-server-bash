@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+read_string() {
+    local len
+    local bytes
+
+    len=$(read_varint)
+
+    read -r -N "$len" bytes
+    echo "$bytes"
+}
+

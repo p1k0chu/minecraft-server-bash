@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if ! command -v ncat &>/dev/null; then
+    echo "ncat binary not found" >&2
+    exit 1
+fi
+
+read -r -p "Port for your local server: " port
+ncat -e ./main -l "$port" -k
+
