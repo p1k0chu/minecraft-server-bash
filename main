@@ -13,7 +13,6 @@ while true; do
 
     case "${player_connection[stage]}" in
         "handshake")
-            echo "packet=$packet" >&2
             packet=$(echo "$packet" | cut -d ',' -f 2 | xxd -r -p | read_c2s_handshake_packet)
             echo "Got handshake packet: $packet" >&2
             exit 0

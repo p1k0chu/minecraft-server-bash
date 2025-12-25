@@ -7,7 +7,6 @@ read_c2s_handshake_packet() {
     local intent
 
     protocol_version=$(read_varint)
-#    echo "protocol_version=$protocol_version" >&2
     server_address=$(read_string)
 
     local b1 b2
@@ -17,6 +16,6 @@ read_c2s_handshake_packet() {
 
     intent=$(read_varint)
 
-    printf $'([protocol_version]="%d" [server_address]="%s" [server_port]="%d" [intent]="%d")' "$protocol_version" "$server_address" "$server_port" "$intent"
+    printf '([protocol_version]="%d" [server_address]="%s" [server_port]="%d" [intent]="%d")' "$protocol_version" "$server_address" "$server_port" "$intent"
 }
 

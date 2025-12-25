@@ -13,7 +13,6 @@ read_varint() {
         fi
 
         printf -v byte '%d' $(( 16#$byte ))
-        #printf "read varint got byte: %#x\n" "$byte" >&2
 
         (( int |= (byte & 127) << count ))
         (( count += 7 ))

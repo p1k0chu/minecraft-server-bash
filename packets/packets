@@ -6,12 +6,9 @@ read_packet() {
     local packet_id
 
     len=$(read_varint)
-    echo "packet length=$len" >&2
 
     head -c "$len" | {
-        echo "readed bytes" >&2
         packet_id=$(read_varint)
-        echo "packet_id=$packet_id" >&2
         printf '%s,' "$packet_id"
         printf '%s' "$(xxd -p)"
     }
